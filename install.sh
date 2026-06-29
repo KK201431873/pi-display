@@ -77,6 +77,9 @@ echo $password | sudo -S systemctl daemon-reload
 echo $password | sudo -S systemctl enable picard_display
 echo $password | sudo -S systemctl start picard_display
 
+# Flush pending writes
+sync
+
 echo ""
 echo "Install complete. Reboot for I2C changes to take effect:"
 echo "  sudo reboot"
