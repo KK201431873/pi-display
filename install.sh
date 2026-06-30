@@ -5,7 +5,7 @@ password=$1
 # Determine the real user (works whether script is run as sudo or with password arg)
 USER_NAME=$(logname 2>/dev/null || echo "$SUDO_USER" || echo "$USER")
 
-# Remove any state from previous failed installs. Failures here will stop the script.
+# Remove any state from previous failed installs
 echo $password | sudo -S rm -rf \
     /usr/local/lib/python3.11/dist-packages/Adafruit_PureIO* \
     /usr/local/lib/python3.11/dist-packages/Adafruit_GPIO* \
@@ -14,7 +14,7 @@ echo $password | sudo -S rm -rf \
     /usr/local/lib/python3.11/dist-packages/pidisplay*
 echo $password | sudo -S rm -rf /root/.cache/pip
 
-# Remove any existing masked or broken service file before installing
+# Remove any existing masked/broken service file before installing
 echo $password | sudo -S systemctl unmask picard_display.service 2>/dev/null || true
 echo $password | sudo -S rm -f /etc/systemd/system/picard_display.service
 
@@ -43,9 +43,7 @@ if ! grep -q '^dtparam=i2c_arm=on' $CONFIG_PATH; then
     exit 1
 fi
 
-# Write the service file DIRECTLY to /etc/systemd/system in a single atomic step.
-# Using `tee` instead of `cat > tmp; mv tmp` eliminates the intermediate-file risk
-# that was leaving 0-byte files (which systemd treats as masked).
+# Write service file atomically to /etc/systemd/system
 echo $password | sudo -S tee /etc/systemd/system/picard_display.service > /dev/null <<EOF
 [Unit]
 Description=JetCard display service
@@ -78,6 +76,7 @@ echo $password | sudo -S systemctl enable picard_display
 echo $password | sudo -S systemctl start picard_display
 
 # Flush pending writes
+echo "Finalizing installation. Do not power off the Pi until this script finishes running."
 sync
 
 echo ""
