@@ -81,5 +81,4 @@ echo $password | sudo -S systemctl start picard_display
 sync
 
 echo ""
-echo "Install complete. Reboot for I2C changes to take effect:"
-echo "  sudo reboot"
+echo "Install complete. Power-cycle the Pi for I2C changes to take effect."
